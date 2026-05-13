@@ -18,8 +18,6 @@ namespace SentimentService.Source
             string season)
         {
             Season = season;
-            PlayerService = new NflPlayerService(
-                $"d:/dropbox/csv/PlayerCsv-{Int32.Parse(season)-1}.csv");
         }
 
         public string Version => "1.0.0";
@@ -53,6 +51,9 @@ namespace SentimentService.Source
             int season, 
             string position)
         {
+            PlayerService = new NflPlayerService(
+                $"d:/dropbox/csv/PlayerCsv-{season - 1}.csv");
+
             var result = new List<PlayerRank>();
             Func<NflPlayerState, bool> posFn = null;
             switch (position)
@@ -81,7 +82,7 @@ namespace SentimentService.Source
                 result.Add(
                     new PlayerRank 
                     { 
-                        Rank = ++rank, 
+                        ActualRank = ++rank, 
                         Id = p.ID, 
                         Name = p.Name,
                         TotFp = TotalFp(p)

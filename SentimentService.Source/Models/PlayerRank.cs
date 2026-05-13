@@ -4,7 +4,8 @@
     {
         public string Id { get; set; }
         public string Name { get; set; }
-        public int Rank { get; set; }
+        public int AdpRank { get; set; }
+        public int ActualRank { get; set; }
         public decimal TotFp { get; set; }
     }
 }

@@ -55,33 +55,36 @@ namespace SentimentService.Tests
         [TestMethod]
         public void SentimentServiceKnowsActualRbRanksForSeason()
         {
-            Top7("RB");
+            Top7("RB", 2025);
         }
 
         [TestMethod]
         public void SentimentServiceKnowsActualQbRanksForSeason()
         {
-            Top7("QB");
+            Top7("QB", 2025);
         }
 
         [TestMethod]
         public void SentimentServiceKnowsActualWrRanksForSeason()
         {
-            Top7("WR");
+            Top7("WR", 2025);
         }
 
         [TestMethod]
         public void SentimentServiceKnowsActualTeRanksForSeason()
         {
-            Top7("TE");
+            Top7("TE", 2025);
         }
 
-        private void Top7(string posOfInterest)
+        private void Top7(
+            string posOfInterest,
+            int season)
         {
             var ranks = _sut?.ActualRanksForSeason(
-                2026,
+                season,
                 posOfInterest);
             Assert.IsTrue(ranks?.Any());
+            Console.WriteLine($"Season: {season}");
             Console.WriteLine($"Number of {posOfInterest} ranks loaded: {ranks?.Count()}");
             for (int i = 0; i < 7; i++)
             {
