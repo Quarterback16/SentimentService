@@ -95,11 +95,16 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="WikiPages, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\WikiPages.1.0.5\lib\net48\WikiPages.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Helpers\SentimentsHelper.cs" />
     <Compile Include="ISentimentService.cs" />
     <Compile Include="Models\PlayerRank.cs" />
     <Compile Include="Models\Posture.cs" />
+    <Compile Include="Models\SentimentsContext.cs" />
     <Compile Include="SentimentService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

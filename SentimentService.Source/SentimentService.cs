@@ -12,6 +12,7 @@ namespace SentimentService.Source
     {
         public string Season { get; set; }
         public List<Posture> Postures { get; set; }
+        public List<PlayerRank> Ranks { get; set; }
         public INflPlayerService PlayerService { get; set; }
 
         public SentimentService(
@@ -54,7 +55,7 @@ namespace SentimentService.Source
             PlayerService = new NflPlayerService(
                 $"d:/dropbox/csv/PlayerCsv-{season - 1}.csv");
 
-            var result = new List<PlayerRank>();
+            Ranks = new List<PlayerRank>();
             Func<NflPlayerState, bool> posFn = null;
             switch (position)
             {
@@ -79,15 +80,17 @@ namespace SentimentService.Source
                 .OrderByDescending(p=>TotalFp(p));
             var rank = 0;
             foreach (var p in players)
-                result.Add(
+                Ranks.Add(
                     new PlayerRank 
                     { 
                         ActualRank = ++rank, 
                         Id = p.ID, 
                         Name = p.Name,
+                        Pos = p.Pos,
+                        AdpRank = Int32.Parse(p.Adp),
                         TotFp = TotalFp(p)
                     });
-            return result;
+            return Ranks;
         }
 
         public static Func<NflPlayerState, bool> RB =>

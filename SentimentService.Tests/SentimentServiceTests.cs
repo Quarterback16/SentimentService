@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SentimentService.Source;
+using SentimentService.Source.Helpers;
 using System;
 using System.Linq;
 
@@ -91,6 +92,36 @@ namespace SentimentService.Tests
                 Console.WriteLine(
                     $"{posOfInterest}{i + 1:0#}: {ranks[i].Name,-20} {ranks[i].TotFp:0.00}");
             }
+        }
+
+        [TestMethod]
+        public void SentimentServiceCanShowQbPerfAgainstAdp()
+        {
+            PerfAgainstAdp("QB");
+        }
+
+        [TestMethod]
+        public void SentimentServiceCanShowRbPerfAgainstAdp()
+        {
+            PerfAgainstAdp("RB");
+        }
+
+        private void PerfAgainstAdp(string posOfInterest)
+        {
+            var sc = new Source.Models.SentimentsContext
+            {
+                Season = _sut?.Season,
+                Postures = _sut?.LoadPostures(),
+                Ranks = _sut?.ActualRanksForSeason(
+                    Int32.Parse(_sut?.Season) - 1,
+                    posOfInterest),
+                PlayerService = _sut?.PlayerService
+            };
+            var performance = SentimentsHelper.PerformanceAgainstAdp(
+                sc,
+                posOfInterest);
+            Assert.IsFalse(string.IsNullOrEmpty(performance));
+            Console.WriteLine(performance);
         }
     }
 }
