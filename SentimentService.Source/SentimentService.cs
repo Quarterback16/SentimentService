@@ -1,5 +1,7 @@
 ﻿using Newtonsoft.Json;
 using PlayerService_2._0;
+using RosterLib;
+using RosterLib.Helpers;
 using SentimentService.Source.Models;
 using System;
 using System.Collections.Generic;
@@ -52,8 +54,14 @@ namespace SentimentService.Source
             int season, 
             string position)
         {
-            PlayerService = new NflPlayerService(
-                $"d:/dropbox/csv/PlayerCsv-{season - 1}.csv");
+            var csvFile = $"d:/dropbox/csv/PlayerCsv-{season}.csv";
+            Console.WriteLine($"Using csv file :{csvFile}");
+            PlayerService = new NflPlayerService(csvFile);
+
+            bool skipRookies = false;
+            if (season.ToString() != Utility.CurrentSeason())
+                skipRookies = true;
+
 
             Ranks = new List<PlayerRank>();
             Func<NflPlayerState, bool> posFn = null;
@@ -80,20 +88,26 @@ namespace SentimentService.Source
                 .OrderByDescending(p=>TotalFp(p));
             var rank = 0;
             foreach (var p in players)
+            {
+                if (p.RookieYr.StartsWith(Utility.CurrentSeason())
+                    && skipRookies)
+                        continue;
+                
                 Ranks.Add(
-                    new PlayerRank 
-                    { 
-                        ActualRank = ++rank, 
-                        Id = p.ID, 
+                    new PlayerRank
+                    {
+                        ActualRank = ++rank,
+                        Id = p.ID,
                         Name = p.Name,
                         Pos = p.Pos,
-                        AdpRank = Int32.Parse(p.Adp),
+                        AdpRank = AdpHelper.PosAdpRankFromString(p.PosAdp),
                         TotFp = TotalFp(p)
                     });
+            }
             return Ranks;
         }
 
-        public static Func<NflPlayerState, bool> RB =>
+         public static Func<NflPlayerState, bool> RB =>
             (NflPlayerState p) => p.Role != null && (p.Pos.Contains("RB")
             || p.Pos.Contains("HB")) && !QB(p);
 

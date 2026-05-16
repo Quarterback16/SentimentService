@@ -1,4 +1,6 @@
 ﻿using SentimentService.Source.Models;
+using System;
+using System.Linq;
 using WikiPages;
 
 namespace SentimentService.Source.Helpers
@@ -23,8 +25,12 @@ namespace SentimentService.Source.Helpers
 
             table.AddRows(sc.Ranks.Count);
 
+            var maxAdp = MaxAdp(sc);
+            Console.WriteLine($"Max ADP: {maxAdp}");
+
             var nRow = 0;
-            foreach (var p in sc.Ranks)
+            foreach (var p in sc.Ranks.OrderByDescending(
+                p => AdpDiff(p, maxAdp)))
             {
                 table.AddCell(
                     ++nRow,
@@ -42,11 +48,37 @@ namespace SentimentService.Source.Helpers
                     nRow,
                     "ADP",
                     p.AdpRank.ToString());
+                table.AddCell(
+                    nRow,
+                    "Diff",
+                    $"{AdpDiff(p,maxAdp):+0;-0}");
             }
 
             page.AddTable(table);
 
             return page.PageContents();
         }
+
+        private static int AdpRank(int actualRank, int maxAdp) =>
+        
+            (actualRank == 0)
+                ? maxAdp
+                : actualRank;
+
+        private static int MaxAdp(
+            SentimentsContext sc) =>
+        
+            sc.Ranks
+                .DefaultIfEmpty()
+                .Max(p => p?.AdpRank ?? 0);        
+
+        public static int AdpDiff(
+            PlayerRank p,
+            int maxAdp) =>
+        
+            (p.AdpRank > 0) 
+                ? p.AdpRank - p.ActualRank
+                : maxAdp - p.ActualRank;
+        
     }
 }

@@ -70,11 +70,13 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\Dropbox\Services\PlayerService-2.0.dll</HintPath>
     </Reference>
-    <Reference Include="RosterLib, Version=1.0.0.46, Culture=neutral, processorArchitecture=x86">
-      <HintPath>..\packages\Rosterlib.1.0.0.46\lib\net48\RosterLib.dll</HintPath>
+    <Reference Include="RosterLib, Version=1.0.0.50, Culture=neutral, processorArchitecture=x86">
+      <HintPath>..\packages\Rosterlib.1.0.0.50\lib\net48\RosterLib.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="SentimentServiceTests.cs" />
