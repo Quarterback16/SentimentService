@@ -59,12 +59,6 @@ namespace SentimentService.Source.Helpers
             return page.PageContents();
         }
 
-        private static int AdpRank(int actualRank, int maxAdp) =>
-        
-            (actualRank == 0)
-                ? maxAdp
-                : actualRank;
-
         private static int MaxAdp(
             SentimentsContext sc) =>
         
@@ -79,6 +73,15 @@ namespace SentimentService.Source.Helpers
             (p.AdpRank > 0) 
                 ? p.AdpRank - p.ActualRank
                 : maxAdp - p.ActualRank;
+
+        public static int AdpDiff(PlayerRank rank) =>
         
+            rank.AdpRank - rank.ActualRank;
+        
+        public static string AdpPerfSummary(
+            string position, 
+            PlayerRank rank) =>
+
+            $"{rank.Name} was drafted at {position}{rank.AdpRank:0#} and finished {position}{rank.ActualRank:0#}, {AdpDiff(rank):+0;-0}."; 
     }
 }

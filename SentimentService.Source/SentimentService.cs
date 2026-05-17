@@ -62,7 +62,6 @@ namespace SentimentService.Source
             if (season.ToString() != Utility.CurrentSeason())
                 skipRookies = true;
 
-
             Ranks = new List<PlayerRank>();
             Func<NflPlayerState, bool> posFn = null;
             switch (position)
@@ -140,5 +139,48 @@ namespace SentimentService.Source
             + decimal.Parse(p.FP15)
             + decimal.Parse(p.FP16)
             + decimal.Parse(p.FP17);
+
+        public AdpPerf AdpPerfForPlayer(
+            string playerId,
+            int season,
+            string position)
+        {
+            ActualRanksForSeason(
+                season,
+                position);
+
+            var performance = Ranks
+                .Where(r => r.Id == playerId)
+                .Select(r => r.AdpRank - r.ActualRank)
+                .FirstOrDefault();
+
+            if (performance < -2)
+                return AdpPerf.Under;
+            else if (performance > 2)
+                return AdpPerf.Over;
+            else
+              return AdpPerf.AsExpected;
+        }
+
+        public PlayerRank PlayerRankForPlayer(
+            string playerId,
+            int season,
+            string position)
+        {
+            ActualRanksForSeason(
+                season,
+                position);
+
+            return Ranks
+                .FirstOrDefault(r => r.Id == playerId);
+        }
+
+        public AdpPerf AdpPerfForPlayer(
+            AdpPerfIdentifier identifier) =>
+
+                AdpPerfForPlayer(
+                        identifier.PlayerId,
+                        identifier.Season,
+                        identifier.Position);
     }
 }

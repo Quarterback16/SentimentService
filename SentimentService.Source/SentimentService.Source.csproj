@@ -100,8 +100,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AdpPerf.cs" />
     <Compile Include="Helpers\SentimentsHelper.cs" />
     <Compile Include="ISentimentService.cs" />
+    <Compile Include="Models\AdpPerfIdentifier.cs" />
     <Compile Include="Models\PlayerRank.cs" />
     <Compile Include="Models\Posture.cs" />
     <Compile Include="Models\SentimentsContext.cs" />

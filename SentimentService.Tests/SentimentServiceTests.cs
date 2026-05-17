@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SentimentService.Source;
 using SentimentService.Source.Helpers;
+using SentimentService.Source.Models;
 using System;
 using System.Linq;
 
@@ -122,6 +123,35 @@ namespace SentimentService.Tests
                 posOfInterest);
             Assert.IsFalse(string.IsNullOrEmpty(performance));
             Console.WriteLine(performance);
+        }
+
+        [TestMethod]
+        public void SS_KnowsAdamsOverPerformedAdp()
+        {
+            var context = new AdpPerfIdentifier
+            {
+                Season = 2025,
+                Position = "WR",
+                PlayerId = "ADAMDA01"
+            };
+            var result = _sut?.AdpPerfForPlayer(context);
+            Assert.IsNotNull(result);
+            Assert.AreEqual(AdpPerf.Over, result);
+        }
+
+        [TestMethod]
+        public void SS_KnowsAdamsPlayerRank()
+        {
+            var posOfInterest = "WR";
+            var result = _sut?.PlayerRankForPlayer(
+                "ADAMDA01",
+                2025,
+                posOfInterest);
+            Assert.IsNotNull(result);
+            Console.WriteLine(
+                SentimentsHelper.AdpPerfSummary(
+                    posOfInterest,
+                    result));
         }
     }
 }

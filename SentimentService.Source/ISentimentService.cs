@@ -1,4 +1,5 @@
 ﻿using PlayerService_2._0;
+using SentimentService.Source.Models;
 using System.Collections.Generic;
 
 namespace SentimentService.Source
@@ -14,8 +15,18 @@ namespace SentimentService.Source
             string filePath);
         string PosturesFilePath();
 
-        List<Models.PlayerRank> ActualRanksForSeason(
+        List<PlayerRank> ActualRanksForSeason(
             int season, 
+            string position);
+        AdpPerf AdpPerfForPlayer(
+            string playerId,
+            int season,
+            string position);
+        AdpPerf AdpPerfForPlayer(
+            AdpPerfIdentifier identifier);
+        PlayerRank PlayerRankForPlayer(
+            string playerId,
+            int season,
             string position);
     }
 }
