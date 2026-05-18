@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using InjectorMicroService;
+using Newtonsoft.Json;
 using PlayerService_2._0;
 using RosterLib;
 using RosterLib.Helpers;
@@ -7,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace SentimentService.Source
 {
@@ -17,16 +19,22 @@ namespace SentimentService.Source
         public List<PlayerRank> Ranks { get; set; }
         public INflPlayerService PlayerService { get; set; }
 
+        public string DropboxFolder { get; set; }
+
         public SentimentService(
-            string season)
+            string season,
+            string dropboxFolder)
         {
             Season = season;
+            DropboxFolder = dropboxFolder;
+            PlayerService = new NflPlayerService(
+                $"{DropboxFolder}/csv/PlayerCsv-{season}.csv");
         }
 
         public string Version => "1.0.0";
         public string PosturesFilePath() =>
 
-            $"d:/Dropbox/JSON/Postures-{Season}.json";
+            $"{DropboxFolder}/JSON/Postures-{Season}.json";
 
         public List<Posture> LoadPostures() =>
 
@@ -54,7 +62,7 @@ namespace SentimentService.Source
             int season, 
             string position)
         {
-            var csvFile = $"d:/dropbox/csv/PlayerCsv-{season}.csv";
+            var csvFile = $"{DropboxFolder}/csv/PlayerCsv-{season}.csv";
             Console.WriteLine($"Using csv file :{csvFile}");
             PlayerService = new NflPlayerService(csvFile);
 
@@ -162,6 +170,15 @@ namespace SentimentService.Source
               return AdpPerf.AsExpected;
         }
 
+        public AdpPerf AdpPerfForPlayer(
+            PerfIdentifier identifier) =>
+
+                AdpPerfForPlayer(
+                        identifier.PlayerId,
+                        identifier.Season,
+                        identifier.Position);
+
+
         public PlayerRank PlayerRankForPlayer(
             string playerId,
             int season,
@@ -175,12 +192,45 @@ namespace SentimentService.Source
                 .FirstOrDefault(r => r.Id == playerId);
         }
 
-        public AdpPerf AdpPerfForPlayer(
-            AdpPerfIdentifier identifier) =>
+        public bool SetSentimentForPlayer(
+            PerfIdentifier context, 
+            string sentiment)
+        {
+            var stemfolder = StemFolder("players");
 
-                AdpPerfForPlayer(
-                        identifier.PlayerId,
-                        identifier.Season,
-                        identifier.Position);
+            var mi = new MarkdownInjector(
+                stemfolder);
+
+            var playerName = PlayerName(context.PlayerId);
+            if (string.IsNullOrEmpty(playerName))
+            {
+                Console.WriteLine(
+                    $@"Could not find player name for id {
+                        context.PlayerId
+                        }");
+                return false;
+            }
+            var result = mi.UpdateProperty(
+                propertyName: "sentiment",
+                newValue: sentiment,
+                targetFile: $"{playerName}.md");
+
+            return !string.IsNullOrEmpty(result);
+        }
+
+        private string StemFolder(string subFolder) =>
+        
+            new StringBuilder()
+                .Append(DropboxFolder)
+                .Append(FolderHelper.GetObsidianNflStemFolder())
+                .Append(subFolder)
+                .Append("\\")
+                .ToString();
+
+        private string PlayerName(string playerId) =>
+             PlayerService
+                .Search(p => p.ID == playerId)
+                .Select(p => p.Name)
+                .FirstOrDefault() ?? string.Empty;
     }
 }

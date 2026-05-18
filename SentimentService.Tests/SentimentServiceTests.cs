@@ -22,7 +22,8 @@ namespace SentimentService.Tests
 
         private static ISentimentService SystemUnderTest() =>
             new Source.SentimentService(
-                "2026");
+                "2026",
+                "d:/dropbox/");
 
         #endregion
 
@@ -128,7 +129,7 @@ namespace SentimentService.Tests
         [TestMethod]
         public void SS_KnowsAdamsOverPerformedAdp()
         {
-            var context = new AdpPerfIdentifier
+            var context = new PerfIdentifier
             {
                 Season = 2025,
                 Position = "WR",
@@ -153,5 +154,6 @@ namespace SentimentService.Tests
                     posOfInterest,
                     result));
         }
+
     }
 }

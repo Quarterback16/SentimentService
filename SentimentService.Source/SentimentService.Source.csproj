@@ -52,6 +52,9 @@
     <Reference Include="CsvHelper, Version=33.0.0.0, Culture=neutral, PublicKeyToken=8c4959082be5c823, processorArchitecture=MSIL">
       <HintPath>..\packages\CsvHelper.33.1.0\lib\net48\CsvHelper.dll</HintPath>
     </Reference>
+    <Reference Include="InjectorMicroService, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\InjectorMicroService.1.0.4\lib\netstandard2.0\InjectorMicroService.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.8.0.0\lib\net462\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
     </Reference>
@@ -103,7 +106,7 @@
     <Compile Include="AdpPerf.cs" />
     <Compile Include="Helpers\SentimentsHelper.cs" />
     <Compile Include="ISentimentService.cs" />
-    <Compile Include="Models\AdpPerfIdentifier.cs" />
+    <Compile Include="Models\PerfIdentifier.cs" />
     <Compile Include="Models\PlayerRank.cs" />
     <Compile Include="Models\Posture.cs" />
     <Compile Include="Models\SentimentsContext.cs" />

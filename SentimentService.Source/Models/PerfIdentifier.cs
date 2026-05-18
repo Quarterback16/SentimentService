@@ -1,6 +1,6 @@
 ﻿namespace SentimentService.Source.Models
 {
-    public class AdpPerfIdentifier
+    public class PerfIdentifier
     {
         public int Season { get; set; }
         public string Position { get; set; }
