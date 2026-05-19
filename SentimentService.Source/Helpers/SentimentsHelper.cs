@@ -13,7 +13,8 @@ namespace SentimentService.Source.Helpers
         {
             var page = new WikiPage();
             page.AddHeading(
-                $"{position} Performance Against ADP for {sc.Season}");
+                $"{position} Performance Against ADP for {sc.Season}",
+                2);
 
             var table = new WikiTable();
             table.AddColumnRight("#");
@@ -21,9 +22,10 @@ namespace SentimentService.Source.Helpers
             table.AddColumnRight("Rank");
             table.AddColumnRight("ADP");
             table.AddColumnRight("Diff");
+            table.AddColumnRight("FP");
             table.AddColumn("Comments");
 
-            table.AddRows(sc.Ranks.Count);
+            table.AddRows(sc.Ranks.Count(r => r.TotFp > 0));
 
             var maxAdp = MaxAdp(sc);
             Console.WriteLine($"Max ADP: {maxAdp}");
@@ -32,6 +34,9 @@ namespace SentimentService.Source.Helpers
             foreach (var p in sc.Ranks.OrderByDescending(
                 p => AdpDiff(p, maxAdp)))
             {
+                if (p.TotFp == 0)
+                    continue;
+
                 table.AddCell(
                     ++nRow,
                     "#",
@@ -39,7 +44,7 @@ namespace SentimentService.Source.Helpers
                 table.AddCell(
                     nRow,
                     "Player",
-                    p.Name);
+                    $"[[{p.Name}]]");
                 table.AddCell(
                     nRow,
                     "Rank",
@@ -48,6 +53,10 @@ namespace SentimentService.Source.Helpers
                     nRow,
                     "ADP",
                     p.AdpRank.ToString());
+                table.AddCell(
+                    nRow,
+                    "FP",
+                    p.TotFp.ToString("0.0"));
                 table.AddCell(
                     nRow,
                     "Diff",

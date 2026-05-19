@@ -5,5 +5,6 @@
         public int Season { get; set; }
         public string Position { get; set; }
         public string PlayerId { get; set; }
+        public string PlayerName { get; set; }
     }
 }

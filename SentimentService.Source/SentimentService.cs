@@ -201,13 +201,12 @@ namespace SentimentService.Source
             var mi = new MarkdownInjector(
                 stemfolder);
 
-            var playerName = PlayerName(context.PlayerId);
+            var playerName = GetPlayerName(context);
+
             if (string.IsNullOrEmpty(playerName))
             {
                 Console.WriteLine(
-                    $@"Could not find player name for id {
-                        context.PlayerId
-                        }");
+                    $@"Could not find player name for id {context.PlayerId}");
                 return false;
             }
             var result = mi.UpdateProperty(
@@ -216,6 +215,16 @@ namespace SentimentService.Source
                 targetFile: $"{playerName}.md");
 
             return !string.IsNullOrEmpty(result);
+        }
+
+        private string GetPlayerName(PerfIdentifier context)
+        {
+            string playerName;
+            if (string.IsNullOrEmpty(context.PlayerName))
+                playerName = PlayerName(context.PlayerId);
+            else
+                playerName = context.PlayerName;
+            return playerName;
         }
 
         private string StemFolder(string subFolder) =>

@@ -1,8 +1,10 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using RosterLib;
 using SentimentService.Source;
 using SentimentService.Source.Helpers;
 using SentimentService.Source.Models;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace SentimentService.Tests
@@ -108,9 +110,21 @@ namespace SentimentService.Tests
             PerfAgainstAdp("RB");
         }
 
+        [TestMethod]
+        public void SentimentServiceCanShowWrPerfAgainstAdp()
+        {
+            PerfAgainstAdp("WR");
+        }
+
+        [TestMethod]
+        public void SentimentServiceCanShowTePerfAgainstAdp()
+        {
+            PerfAgainstAdp("TE");
+        }
+
         private void PerfAgainstAdp(string posOfInterest)
         {
-            var sc = new Source.Models.SentimentsContext
+            var sc = new SentimentsContext
             {
                 Season = _sut?.Season,
                 Postures = _sut?.LoadPostures(),
@@ -155,5 +169,57 @@ namespace SentimentService.Tests
                     result));
         }
 
+        [TestMethod]
+        public void SS_CanUpdateSentiments()
+        {
+            _sut?.LoadPostures();
+            Assert.IsTrue(_sut?.Postures?.Any());
+
+            //Amalgamate the postures by player
+            var postDict = new Dictionary<string, WinLossRecord>();
+            foreach (var p in _sut?.Postures)
+            {
+                if (!postDict.ContainsKey(p.Player))
+                {
+                    postDict[p.Player] = new WinLossRecord(0, 0, 0);
+                }
+                if (p.PostureFlag == 1)
+                {
+                    postDict[p.Player].Wins++;
+                }
+                else
+                {
+                    postDict[p.Player].Losses++;
+                }
+            }
+            Dictionary<string, WinLossRecord> sortedPlayers = 
+                postDict
+                    .OrderByDescending(kvp => kvp.Value.Clip())
+                    .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+            var updates = 0;
+            foreach (KeyValuePair<string, WinLossRecord> kvp in sortedPlayers)
+            {
+                Console.WriteLine(
+                    $"{kvp.Key}: {kvp.Value.Wins}-{kvp.Value.Losses}");
+
+                var perfId =new PerfIdentifier
+                {
+                    PlayerName = RemoveSquareBrackets(kvp.Key),
+                };
+                _sut?.SetSentimentForPlayer(
+                    perfId,
+                    $"{kvp.Value.Wins}-{kvp.Value.Losses}");
+                updates++;
+            }
+            Console.WriteLine($"Total updates: {updates}");
+        }
+
+        private static string RemoveSquareBrackets(string input) =>
+        
+            (input == null) 
+                ? string.Empty
+                : input.Replace("[", string.Empty)
+                       .Replace("]", string.Empty);
+        
     }
 }

@@ -8,10 +8,12 @@ namespace SentimentService.Source
     {
         string Version { get; }
         string Season { get; }
+        List<Posture> Postures { get; }
+
         INflPlayerService PlayerService { get; }
 
-        List<Models.Posture> LoadPostures();
-        List<Models.Posture> LoadPostures(
+        List<Posture> LoadPostures();
+        List<Posture> LoadPostures(
             string filePath);
 
         string PosturesFilePath();
