@@ -202,13 +202,12 @@ namespace SentimentService.Tests
                 Console.WriteLine(
                     $"{kvp.Key}: {kvp.Value.Wins}-{kvp.Value.Losses}");
 
-                var perfId =new PerfIdentifier
+                var perfId = new PerfIdentifier
                 {
                     PlayerName = RemoveSquareBrackets(kvp.Key),
+                    Record = kvp
                 };
-                _sut?.SetSentimentForPlayer(
-                    perfId,
-                    $"{kvp.Value.Wins}-{kvp.Value.Losses}");
+                _sut?.SetSentimentForPlayer(perfId);
                 updates++;
             }
             Console.WriteLine($"Total updates: {updates}");

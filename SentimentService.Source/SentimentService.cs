@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using WikiPages;
+
 
 namespace SentimentService.Source
 {
@@ -193,8 +195,7 @@ namespace SentimentService.Source
         }
 
         public bool SetSentimentForPlayer(
-            PerfIdentifier context, 
-            string sentiment)
+            PerfIdentifier context)
         {
             var stemfolder = StemFolder("players");
 
@@ -209,13 +210,88 @@ namespace SentimentService.Source
                     $@"Could not find player name for id {context.PlayerId}");
                 return false;
             }
+            var targetFile = $"{playerName}.md";
+            var fullTargetFile = $"{stemfolder}{targetFile}";
+            // may have to create a new page here  
+            if (!File.Exists(fullTargetFile))
+            {
+                var fileOk = CreateMarkdownFile(
+                    fullTargetFile,
+                    playerName);
+                if (!fileOk)
+                {
+                    Console.WriteLine(
+                        $@"Could not create file for player {playerName} at path {fullTargetFile}");
+                    return false;
+                }
+            }
+
+            // doesnt see the "[] style tags
             var result = mi.UpdateProperty(
                 propertyName: "sentiment",
-                newValue: sentiment,
-                targetFile: $"{playerName}.md");
+                newValue: $"{context.Record.Value.Wins}-{context.Record.Value.Losses}",
+                targetFile: targetFile);
+
+            mi.AddPropertyTag(
+                "nfl-player",
+                targetFile);
+            if (context.Record.Value.Wins > 0)
+                mi.AddPropertyTag(
+                    $"{Season}-hype",
+                    targetFile);
+            if (context.Record.Value.Losses > 0)
+                mi.AddPropertyTag(
+                    $"{Season}-fade",
+                    targetFile);
 
             return !string.IsNullOrEmpty(result);
         }
+
+        private bool CreateMarkdownFile(
+            string fileName,
+            string playerName)
+        {
+            //  impure file io
+            var md = MarkdownTemplate(
+                playerName,
+                Season);
+
+            bool result;
+            try
+            {
+                using (StreamWriter outputFile = new StreamWriter(
+                    fileName))
+                {
+                    outputFile.WriteLine(md);
+                }
+                result = true;
+            }
+            catch (Exception)
+            {
+                result = false;
+            }
+            return result;
+        }
+
+        private static string MarkdownTemplate(
+            string playerName,
+            string season) =>
+
+                new WikiPage()
+                    .AddTags(new string[] { "nfl-player" })
+                    .AddHeading(playerName)
+                    .AddBlankLine()
+                    .AddHeading($"[[Season {season}]]", 2)
+                    .AddLine(StartTag($"projection-{season}"))
+                    .AddLine(EndTag($"projection-{season}"))
+                    .AddBlankLine()
+                    .AddLine(StartTag($"gamelog-{season}"))
+                    .AddLine(EndTag($"gamelog-{season}"))
+                    .AddBlankLine()
+                    .AddHeading("Career Stats", 2)
+                    .AddLine(StartTag("report"))
+                    .AddLine(EndTag($"report"))
+                    .PageContents();
 
         private string GetPlayerName(PerfIdentifier context)
         {
@@ -241,5 +317,21 @@ namespace SentimentService.Source
                 .Search(p => p.ID == playerId)
                 .Select(p => p.Name)
                 .FirstOrDefault() ?? string.Empty;
+
+        private static string StartTag(string tagName) =>
+
+            new StringBuilder()
+                .Append("{")
+                .Append(tagName)
+                .Append("}")
+                .ToString();
+
+        private static string EndTag(string tagName) =>
+
+            new StringBuilder()
+                .Append("{/")
+                .Append(tagName)
+                .Append("}")
+                .ToString();
     }
 }

@@ -36,7 +36,6 @@ namespace SentimentService.Source
             string position);
 
         bool SetSentimentForPlayer(
-            PerfIdentifier context, 
-            string sentiment);
+            PerfIdentifier context);
     }
 }

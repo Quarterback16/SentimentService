@@ -1,4 +1,7 @@
-﻿namespace SentimentService.Source.Models
+﻿using RosterLib;
+using System.Collections.Generic;
+
+namespace SentimentService.Source.Models
 {
     public class PerfIdentifier
     {
@@ -6,5 +9,6 @@
         public string Position { get; set; }
         public string PlayerId { get; set; }
         public string PlayerName { get; set; }
+        public KeyValuePair<string, WinLossRecord> Record { get; set; }
     }
 }
