@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using PlayerService_2._0;
 using RosterLib;
 using RosterLib.Helpers;
+using SentimentService.Source.Helpers;
 using SentimentService.Source.Models;
 using System;
 using System.Collections.Generic;
@@ -244,6 +245,26 @@ namespace SentimentService.Source
                     $"{Season}-fade",
                     targetFile);
 
+            var md = SentimentsHelper.FormatSentiments(
+                context.Sentiments);
+
+            if (string.IsNullOrEmpty(md))
+                return !string.IsNullOrEmpty(result);
+
+            if ( ! mi.ContainsTag(
+                targetFile,
+                $"postures-{Season}"))
+            {
+                mi.AppendTag(
+                    targetFile,
+                    $"postures-{Season}",
+                    $"[[Season {Season}]]");
+            }
+            mi.InjectMarkdown(
+                targetFile,
+                $"postures-{Season}",
+                md);
+
             return !string.IsNullOrEmpty(result);
         }
 
@@ -282,6 +303,10 @@ namespace SentimentService.Source
                     .AddHeading(playerName)
                     .AddBlankLine()
                     .AddHeading($"[[Season {season}]]", 2)
+                    .AddBlankLine()
+                    .AddLine(StartTag($"postures-{season}"))
+                    .AddLine(EndTag($"postures-{season}"))
+                    .AddBlankLine()
                     .AddLine(StartTag($"projection-{season}"))
                     .AddLine(EndTag($"projection-{season}"))
                     .AddBlankLine()
@@ -289,6 +314,7 @@ namespace SentimentService.Source
                     .AddLine(EndTag($"gamelog-{season}"))
                     .AddBlankLine()
                     .AddHeading("Career Stats", 2)
+                    .AddBlankLine()
                     .AddLine(StartTag("report"))
                     .AddLine(EndTag($"report"))
                     .PageContents();

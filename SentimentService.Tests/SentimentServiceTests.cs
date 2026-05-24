@@ -205,13 +205,22 @@ namespace SentimentService.Tests
                 var perfId = new PerfIdentifier
                 {
                     PlayerName = RemoveSquareBrackets(kvp.Key),
-                    Record = kvp
+                    Record = kvp,
+                    Sentiments = GetSentimentsForPlayer(kvp)
                 };
                 _sut?.SetSentimentForPlayer(perfId);
                 updates++;
             }
             Console.WriteLine($"Total updates: {updates}");
         }
+
+        private List<Posture> GetSentimentsForPlayer(
+            KeyValuePair<string, WinLossRecord> kvp) =>
+        
+            _sut?.Postures
+                .Where(p => p.Player == kvp.Key)
+                .ToList();
+        
 
         private static string RemoveSquareBrackets(string input) =>
         

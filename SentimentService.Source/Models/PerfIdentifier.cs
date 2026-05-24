@@ -10,5 +10,6 @@ namespace SentimentService.Source.Models
         public string PlayerId { get; set; }
         public string PlayerName { get; set; }
         public KeyValuePair<string, WinLossRecord> Record { get; set; }
+        public List<Posture> Sentiments { get; set; }
     }
 }

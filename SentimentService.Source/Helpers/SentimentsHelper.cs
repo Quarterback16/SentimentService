@@ -1,5 +1,6 @@
 ﻿using SentimentService.Source.Models;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using WikiPages;
 
@@ -91,6 +92,25 @@ namespace SentimentService.Source.Helpers
             string position, 
             PlayerRank rank) =>
 
-            $"{rank.Name} was drafted at {position}{rank.AdpRank:0#} and finished {position}{rank.ActualRank:0#}, {AdpDiff(rank):+0;-0}."; 
+            $"{rank.Name} was drafted at {position}{rank.AdpRank:0#} and finished {position}{rank.ActualRank:0#}, {AdpDiff(rank):+0;-0}.";
+
+        public static string FormatSentiments(
+            List<Posture> sentiments)
+        {
+            var sb = new System.Text.StringBuilder();
+            foreach (var s in sentiments)
+            {
+                sb.AppendLine(
+                    $"- {SentimentIcon(s)} [[{s.Pundit}]] : {s.Text}");
+            } 
+            return sb.ToString();
+        }
+
+        private static string SentimentIcon(Posture s) =>
+        
+            s.PostureFlag == 1
+                ? "✅"
+                : "❌";
+        
     }
 }
