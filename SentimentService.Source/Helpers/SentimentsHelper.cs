@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using WikiPages;
 
 namespace SentimentService.Source.Helpers
@@ -97,7 +98,7 @@ namespace SentimentService.Source.Helpers
         public static string FormatSentiments(
             List<Posture> sentiments)
         {
-            var sb = new System.Text.StringBuilder();
+            var sb = new StringBuilder();
             foreach (var s in sentiments)
             {
                 sb.AppendLine(
@@ -111,6 +112,38 @@ namespace SentimentService.Source.Helpers
             s.PostureFlag == 1
                 ? "✅"
                 : "❌";
-        
+
+        public static string PunditsToMarkdown(
+            PunditContext pc)
+        {
+            var page = new WikiPage();
+            page.AddHeading(
+                $"Pundits for {pc.Season}",
+                2);
+            var table = new WikiTable();
+            table.AddColumn("#");
+            table.AddColumn("Pundit");
+            table.AddColumnRight("Pts");
+            table.AddColumnRight("Postures");
+            table.AddColumnRight("Avg");
+            table.AddColumn("Comments");
+            table.AddRows(pc.Pundits.Count);
+
+            var nRow = 0;
+            foreach (var p in pc.Pundits)
+            {
+                table.AddCell(
+                    ++nRow,
+                    "Pundit",
+                    $"[[{p.Name}]]");
+                table.AddCell(
+                    nRow,
+                    "#",
+                    nRow.ToString());
+            }
+
+            page.AddTable(table);
+            return page.PageContents();
+        }
     }
 }

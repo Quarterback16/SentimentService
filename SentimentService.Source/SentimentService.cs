@@ -359,5 +359,22 @@ namespace SentimentService.Source
                 .Append(tagName)
                 .Append("}")
                 .ToString();
+
+        public List<Pundit> PunditsList()
+        {
+            var stemfolder = StemFolder("pundits");
+            var pundits = Directory
+                .GetFiles(
+                    stemfolder, 
+                    "*.md", 
+                    SearchOption.TopDirectoryOnly)
+                .Select(
+                    filePath => new Pundit
+                    {
+                        Name = Path.GetFileNameWithoutExtension(filePath),
+                    })
+                .ToList();
+            return pundits;
+        }
     }
 }

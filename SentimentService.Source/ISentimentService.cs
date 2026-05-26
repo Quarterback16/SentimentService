@@ -37,5 +37,7 @@ namespace SentimentService.Source
 
         bool SetSentimentForPlayer(
             PerfIdentifier context);
+
+        List<Pundit> PunditsList();
     }
 }

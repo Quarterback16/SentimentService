@@ -170,6 +170,20 @@ namespace SentimentService.Tests
         }
 
         [TestMethod]
+        public void SS_KnowsPundits()
+        {
+            var result = _sut?.PunditsList();
+            Assert.IsNotNull(result);
+            var punditContext = new PunditContext
+            {
+                Season = _sut?.Season,
+                Pundits = result
+            };
+            Console.WriteLine(
+                SentimentsHelper.PunditsToMarkdown(punditContext));
+        }
+
+        [TestMethod]
         public void SS_CanUpdateSentiments()
         {
             _sut?.LoadPostures();

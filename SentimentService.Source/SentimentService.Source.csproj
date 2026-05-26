@@ -112,6 +112,8 @@
     <Compile Include="Models\PerfIdentifier.cs" />
     <Compile Include="Models\PlayerRank.cs" />
     <Compile Include="Models\Posture.cs" />
+    <Compile Include="Models\Pundit.cs" />
+    <Compile Include="Models\PunditContext.cs" />
     <Compile Include="Models\SentimentsContext.cs" />
     <Compile Include="SentimentService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
