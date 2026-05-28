@@ -435,7 +435,7 @@ namespace SentimentService.Source
                     else if (player.Perf < -2) 
                     {
                         // he got it right
-                        punditPts = player.Perf;
+                        punditPts = 1 - player.Perf;
                         pundit.Wins++;
                     }
                 }

@@ -151,7 +151,7 @@ namespace SentimentService.Source.Helpers
                 $"Best Pundits for {sc.Season}",
                 2);
             var table = new WikiTable();
-            table.AddColumn("#");
+            table.AddColumnRight("#");
             table.AddColumn("Pundit");
             table.AddColumnRight("Avg");
             table.AddColumnRight("Postures");
