@@ -159,9 +159,13 @@ namespace SentimentService.Source.Helpers
             table.AddColumnRight("Losses");
             table.AddColumnRight("Pts");
             table.AddColumn("Comments");
-            table.AddRows(sc.Pundits.Count);
+            table.AddRows(sc.Pundits.Count+1);
 
             var nRow = 0;
+            var nTotPts = 0;
+            var nPostures = 0;
+            var nWins = 0;
+            var nLosses = 0;
             foreach (var p in sc.Pundits
                 .OrderByDescending(p => p.Avg()))
             {
@@ -193,7 +197,27 @@ namespace SentimentService.Source.Helpers
                     nRow,
                     "Losses",
                     $"{p.Losses}");
+                nLosses += p.Losses;
+                nWins += p.Wins;
+                nTotPts += p.PunditPts;
+                nPostures += p.Postures;
             }
+            table.AddCell(
+                ++nRow,
+                "Pundit",
+                "TOTALS");
+            table.AddCell(
+                nRow,
+                "Pts",
+                $"{nTotPts:+0;-0}");
+            table.AddCell(
+                nRow,
+                "Wins",
+                $"{nWins}");
+            table.AddCell(
+                nRow,
+                "Losses",
+                $"{nLosses}");
             page.AddTable(table);
             return page.PageContents();
         }

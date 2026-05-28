@@ -417,49 +417,61 @@ namespace SentimentService.Source
                 if (pundit == null)
                     continue;
                 var player = GetPlayerPerfAgainstAdp(
-                    p.Player, 
+                    p.Player,
                     context);
                 if (player == null)
                     continue;
 
-                pundit.Postures++;
-                var punditPts = 0;
-                if (p.PostureFlag == 0)
-                { 
-                    if (player.Perf > 2)
-                    {
-                        // he got it wrong
-                        punditPts = 1 - player.Perf;
-                        pundit.Losses++;
-                    }
-                    else if (player.Perf < -2) 
-                    {
-                        // he got it right
-                        punditPts = 1 - player.Perf;
-                        pundit.Wins++;
-                    }
-                }
-                else
-                {
-                    if (player.Perf > 2)
-                    {
-                        // he got it right
-                        punditPts = player.Perf;
-                        pundit.Wins++;
-                    }
-                    else if (player.Perf < -2)
-                    {
-                        // he got it wrong
-                        punditPts = player.Perf;
-                        pundit.Losses++;
-                    }
-                }
-                pundit.PunditPts += punditPts;
+                UpdatePundit(
+                    p, 
+                    pundit, 
+                    player);
+
                 int index = context.Pundits
                     .FindIndex(x => x.Name == pundit.Name);
                 context.Pundits[index] = pundit;
             }
             return context;
+        }
+
+        private static void UpdatePundit(
+            Posture p, 
+            Pundit pundit, 
+            PerfAgainstAdp player)
+        {
+            pundit.Postures++;
+            var punditPts = 0;
+            if (p.PostureFlag == 0)
+            {
+                if (player.Perf > 2)
+                {
+                    // he got it wrong
+                    punditPts = 1 - player.Perf;
+                    pundit.Losses++;
+                }
+                else if (player.Perf < -2)
+                {
+                    // he got it right
+                    punditPts = 1 - player.Perf;
+                    pundit.Wins++;
+                }
+            }
+            else
+            {
+                if (player.Perf > 2)
+                {
+                    // he got it right
+                    punditPts = player.Perf;
+                    pundit.Wins++;
+                }
+                else if (player.Perf < -2)
+                {
+                    // he got it wrong
+                    punditPts = player.Perf;
+                    pundit.Losses++;
+                }
+            }
+            pundit.PunditPts += punditPts;
         }
 
         private static PerfAgainstAdp GetPlayerPerfAgainstAdp(
