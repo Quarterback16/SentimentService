@@ -376,5 +376,118 @@ namespace SentimentService.Source
                 .ToList();
             return pundits;
         }
+
+        public SentimentsContext CondolidateAdpData(string season)
+        {
+            var result = new SentimentsContext
+            {
+                Season = season,
+                Postures = LoadPostures(PosturesFilePath()),
+            };
+            foreach (var pos in result.Positions)
+            {
+                result.Ranks = ActualRanksForSeason(
+                    int.Parse(season), 
+                    pos);
+                foreach (var playerRanked in result.Ranks)
+                {
+                    var player = new PerfAgainstAdp
+                    {
+                        PlayerId = playerRanked.Id,
+                        Name = playerRanked.Name,
+                        Position = playerRanked.Pos,
+                        AdpRank = playerRanked.AdpRank,
+                        ActualRank = playerRanked.ActualRank,
+                        TotFp = playerRanked.TotFp
+                    };
+                    result.AllAdp.Add(player);
+                }
+            }
+            return result;
+        }
+
+        public SentimentsContext TallyPundits(
+            SentimentsContext context)
+        {
+            foreach (var p in context.Postures)
+            {
+                var pundit = GetPundit(
+                    p.Pundit,
+                    context);
+                if (pundit == null)
+                    continue;
+                var player = GetPlayerPerfAgainstAdp(
+                    p.Player, 
+                    context);
+                if (player == null)
+                    continue;
+
+                pundit.Postures++;
+                var punditPts = 0;
+                if (p.PostureFlag == 0)
+                { 
+                    if (player.Perf > 2)
+                    {
+                        // he got it wrong
+                        punditPts = 1 - player.Perf;
+                    }
+                    else if (player.Perf < -2) 
+                    {
+                        // he got it right
+                        punditPts = player.Perf ;
+                    }
+                }
+                else
+                {
+                    if (player.Perf > 2)
+                    {
+                        // he got it right
+                        punditPts = player.Perf;
+                    }
+                    else if (player.Perf < -2)
+                    {
+                        // he got it wrong
+                        punditPts = player.Perf;
+                    }
+                }
+                pundit.PunditPts += punditPts;
+                int index = context.Pundits
+                    .FindIndex(x => x.Name == pundit.Name);
+                context.Pundits[index] = pundit;
+            }
+            return context;
+        }
+
+        private static PerfAgainstAdp GetPlayerPerfAgainstAdp(
+            string playerName, 
+            SentimentsContext context)
+        {
+            var player = context.AllAdp
+                .FirstOrDefault(p => p.Name == playerName);
+            if (player == null)
+            {
+                Console.WriteLine(
+                    $"Player not found: {playerName}");
+            }
+            return player;
+        }
+
+        private Pundit GetPundit(
+            string punditName,
+            SentimentsContext context)
+        {
+            var pundit = context.Pundits
+                .FirstOrDefault(p => p.Name == punditName);
+            if (pundit == null)
+            {
+                var newPundit = new Pundit 
+                {
+                    Name = punditName,
+                };
+                context.Pundits.Add(newPundit);
+                return newPundit;
+            }
+            return pundit;
+        }
     }
 }

@@ -109,6 +109,7 @@
     <Compile Include="AdpPerf.cs" />
     <Compile Include="Helpers\SentimentsHelper.cs" />
     <Compile Include="ISentimentService.cs" />
+    <Compile Include="Models\PerfAgainstAdp.cs" />
     <Compile Include="Models\PerfIdentifier.cs" />
     <Compile Include="Models\PlayerRank.cs" />
     <Compile Include="Models\Posture.cs" />

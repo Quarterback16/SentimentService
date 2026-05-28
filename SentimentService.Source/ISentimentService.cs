@@ -39,5 +39,11 @@ namespace SentimentService.Source
             PerfIdentifier context);
 
         List<Pundit> PunditsList();
+
+        SentimentsContext CondolidateAdpData(
+            string season);
+
+        SentimentsContext TallyPundits(
+            SentimentsContext context);
     }
 }

@@ -184,6 +184,25 @@ namespace SentimentService.Tests
         }
 
         [TestMethod]
+        public void SS_KnowsBestPundits_2025()
+        {
+            var seasonOfInterest = "2025";
+            var sut = new Source.SentimentService(
+                seasonOfInterest,
+                "d:/dropbox/");
+            var context = sut.CondolidateAdpData(
+                seasonOfInterest);
+            Assert.IsNotNull(context);
+
+            context = sut.TallyPundits(context);
+
+            Console.WriteLine(
+                SentimentsHelper.BestPunditsToMarkdown(
+                    context));
+        }
+
+
+        [TestMethod]
         public void SS_CanUpdateSentiments()
         {
             _sut?.LoadPostures();

@@ -9,5 +9,8 @@ namespace SentimentService.Source.Models
         [JsonProperty("Posture")]
         public int PostureFlag { get; set; } = 0;
         public string Text { get; set; }
+
+        public override string ToString() =>
+            $"{Pundit} on {Player}: {(PostureFlag == 1 ? "Hype" : "Fade")} - {Text}";
     }
 }

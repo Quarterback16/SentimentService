@@ -122,10 +122,7 @@ namespace SentimentService.Source.Helpers
                 2);
             var table = new WikiTable();
             table.AddColumn("#");
-            table.AddColumn("Pundit");
-            table.AddColumnRight("Pts");
-            table.AddColumnRight("Postures");
-            table.AddColumnRight("Avg");
+            table.AddColumn(nameof(Pundit));
             table.AddColumn("Comments");
             table.AddRows(pc.Pundits.Count);
 
@@ -142,6 +139,51 @@ namespace SentimentService.Source.Helpers
                     nRow.ToString());
             }
 
+            page.AddTable(table);
+            return page.PageContents();
+        }
+
+        public static string BestPunditsToMarkdown(
+            SentimentsContext sc)
+        {
+            var page = new WikiPage();
+            page.AddHeading(
+                $"Best Pundits for {sc.Season}",
+                2);
+            var table = new WikiTable();
+            table.AddColumn("#");
+            table.AddColumn("Pundit");
+            table.AddColumnRight("Pts");
+            table.AddColumnRight("Postures");
+            table.AddColumnRight("Avg");
+            table.AddColumn("Comments");
+            table.AddRows(sc.Pundits.Count);
+
+            var nRow = 0;
+            foreach (var p in sc.Pundits
+                .OrderByDescending(p => p.Avg()))
+            {
+                table.AddCell(
+                    ++nRow,
+                    "Pundit",
+                    $"[[{p.Name}]]");
+                table.AddCell(
+                    nRow,
+                    "#",
+                    nRow.ToString());
+                table.AddCell(
+                    nRow,
+                    "Pts",
+                    $"{p.PunditPts:+0;-0}");
+                table.AddCell(
+                    nRow,
+                    "Postures",
+                    $"{p.Postures}");
+                table.AddCell(
+                    nRow,
+                    "Avg",
+                    $"{p.Avg()}");
+            }
             page.AddTable(table);
             return page.PageContents();
         }
