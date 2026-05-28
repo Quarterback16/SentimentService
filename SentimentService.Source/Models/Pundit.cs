@@ -8,6 +8,9 @@
         public int PunditPts { get; set; }
         public int Postures { get; set; }
 
+        public int Wins { get; set; }
+        public int Losses { get; set; }
+
         public int Avg()
         {
             return (Postures > 0) ? PunditPts / Postures : 0;

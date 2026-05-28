@@ -430,11 +430,13 @@ namespace SentimentService.Source
                     {
                         // he got it wrong
                         punditPts = 1 - player.Perf;
+                        pundit.Losses++;
                     }
                     else if (player.Perf < -2) 
                     {
                         // he got it right
-                        punditPts = player.Perf ;
+                        punditPts = player.Perf;
+                        pundit.Wins++;
                     }
                 }
                 else
@@ -443,11 +445,13 @@ namespace SentimentService.Source
                     {
                         // he got it right
                         punditPts = player.Perf;
+                        pundit.Wins++;
                     }
                     else if (player.Perf < -2)
                     {
                         // he got it wrong
                         punditPts = player.Perf;
+                        pundit.Losses++;
                     }
                 }
                 pundit.PunditPts += punditPts;

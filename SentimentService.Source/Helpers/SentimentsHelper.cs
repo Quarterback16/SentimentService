@@ -153,9 +153,11 @@ namespace SentimentService.Source.Helpers
             var table = new WikiTable();
             table.AddColumn("#");
             table.AddColumn("Pundit");
-            table.AddColumnRight("Pts");
-            table.AddColumnRight("Postures");
             table.AddColumnRight("Avg");
+            table.AddColumnRight("Postures");
+            table.AddColumnRight("Wins");
+            table.AddColumnRight("Losses");
+            table.AddColumnRight("Pts");
             table.AddColumn("Comments");
             table.AddRows(sc.Pundits.Count);
 
@@ -183,6 +185,14 @@ namespace SentimentService.Source.Helpers
                     nRow,
                     "Avg",
                     $"{p.Avg()}");
+                table.AddCell(
+                    nRow,
+                    "Wins",
+                    $"{p.Wins}");
+                table.AddCell(
+                    nRow,
+                    "Losses",
+                    $"{p.Losses}");
             }
             page.AddTable(table);
             return page.PageContents();
