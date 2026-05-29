@@ -7,6 +7,7 @@ using SentimentService.Source.Helpers;
 using SentimentService.Source.Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -66,7 +67,7 @@ namespace SentimentService.Source
             string position)
         {
             var csvFile = $"{DropboxFolder}/csv/PlayerCsv-{season}.csv";
-            Console.WriteLine($"Using csv file :{csvFile}");
+            Debug.WriteLine($"Using csv file :{csvFile}");
             PlayerService = new NflPlayerService(csvFile);
 
             bool skipRookies = false;
