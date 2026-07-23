@@ -45,5 +45,7 @@ namespace SentimentService.Source
 
         SentimentsContext TallyPundits(
             SentimentsContext context);
+
+        int UpdatePunditPages();
     }
 }

@@ -19,8 +19,8 @@ namespace SentimentService.Source
     public class SentimentService : ISentimentService
     {
         public string Season { get; set; }
-        public List<Posture> Postures { get; set; }
-        public List<PlayerRank> Ranks { get; set; }
+        public List<Posture> Postures { get; set; } = new List<Posture>();
+        public List<PlayerRank> Ranks { get; set; } = new List<PlayerRank>();
         public INflPlayerService PlayerService { get; set; }
 
         public string DropboxFolder { get; set; }
@@ -36,9 +36,14 @@ namespace SentimentService.Source
         }
 
         public string Version => "1.0.0";
+
         public string PosturesFilePath() =>
 
             $"{DropboxFolder}/JSON/Postures-{Season}.json";
+
+        public string PunditsFolder() =>
+
+            $"{StemFolder("pundits")}/";
 
         public List<Posture> LoadPostures() =>
 
@@ -440,7 +445,7 @@ namespace SentimentService.Source
             Pundit pundit, 
             PerfAgainstAdp player)
         {
-            pundit.Postures++;
+            pundit.PostureCount++;
             var punditPts = 0;
             if (p.PostureFlag == 0)
             {
@@ -505,6 +510,77 @@ namespace SentimentService.Source
                 return newPundit;
             }
             return pundit;
+        }
+
+        public int UpdatePunditPages()
+        {
+            var updates = 0;
+            if (!Postures.Any())
+                LoadPostures();
+
+            var groupedByPundit = Postures
+                .GroupBy(p => p.Pundit)
+                .ToDictionary(
+                    g => g.Key,                    // key: pundit name (string)
+                    g => g.ToList()                // value: list of Posture objects for that pundit
+                );
+
+            foreach (var kvp in groupedByPundit)
+            {
+                var pundit = new Pundit
+                {
+                    Name = kvp.Key,
+                    Postures = kvp.Value,
+                    PostureCount = kvp.Value.Count
+                };
+                if (UpdatePunditPostures(pundit))
+                    updates++;
+            }
+            return updates;
+        }
+
+        private bool UpdatePunditPostures(
+            Pundit pundit)
+        {
+            var result = false;
+            var punditPage = $"{PunditsFolder()}{pundit.Name}.md";
+            
+            if (!File.Exists(punditPage))
+            {
+                var md = SentimentsHelper.PunditPageToMarkdown(
+                    pundit,
+                    Season);
+                try
+                {
+                    using (StreamWriter outputFile = new StreamWriter(
+                        punditPage))
+                    {
+                        outputFile.WriteLine(md);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    result = false;
+                    Debug.WriteLine(
+                        $"Error writing file for pundit {pundit.Name} at path {punditPage}: {ex.Message}");
+                    return result;
+                }
+            }
+            var mi = new MarkdownInjector(
+                StemFolder("pundits"));
+            if (!mi.ContainsTag(
+                $"{pundit.Name}.md",
+                $"postures-{Season}"))
+            {
+                mi.AppendTag(
+                    targetfile: $"{pundit.Name}.md",
+                    tagName: $"postures-{Season}",
+                    heading: $"[[Season {Season}]] postures");
+            }
+            return mi.InjectMarkdown(
+                $"{pundit.Name}.md",
+                $"postures-{Season}",
+                SentimentsHelper.FormatPostures(pundit.Postures));
         }
     }
 }

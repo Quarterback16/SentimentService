@@ -131,7 +131,7 @@ namespace SentimentService.Source.Helpers
             {
                 table.AddCell(
                     ++nRow,
-                    "Pundit",
+                    nameof(Pundit),
                     $"[[{p.Name}]]");
                 table.AddCell(
                     nRow,
@@ -184,7 +184,7 @@ namespace SentimentService.Source.Helpers
                 table.AddCell(
                     nRow,
                     "Postures",
-                    $"{p.Postures}");
+                    $"{p.PostureCount}");
                 table.AddCell(
                     nRow,
                     "Avg",
@@ -200,7 +200,7 @@ namespace SentimentService.Source.Helpers
                 nLosses += p.Losses;
                 nWins += p.Wins;
                 nTotPts += p.PunditPts;
-                nPostures += p.Postures;
+                nPostures += p.PostureCount;
             }
             table.AddCell(
                 ++nRow,
@@ -220,6 +220,44 @@ namespace SentimentService.Source.Helpers
                 $"{nLosses}");
             page.AddTable(table);
             return page.PageContents();
+        }
+
+        public static string PunditPageToMarkdown(
+            Pundit pundit,
+            string season)
+        {
+            var page = new WikiPage();
+            page.AddTags(
+                new string[] 
+                {
+                    "nfl-pundit" 
+                });
+            page.AddHeading(pundit.Name);
+            page.AddBlankLine();
+            page.AddHeading(
+                $"[[Season {season}]] postures",
+                2);
+            page.AddBlankLine();
+            page.AddLine($"{{postures-{season}}}");
+            page.AddLine($"{{/postures-{season}}}");
+            page.AddBlankLine();
+
+            page.AddLine("##");
+            page.AddHorizontalRule();
+
+            return page.PageContents();
+        }
+
+        public static string FormatPostures(
+            List<Posture> postures)
+        {
+            var sb = new StringBuilder();
+            foreach (var p in postures)
+            {
+                sb.AppendLine(
+                    $"- {SentimentIcon(p)} [[{p.Player}]] : {p.Text}");
+            }
+            return sb.ToString();
         }
     }
 }

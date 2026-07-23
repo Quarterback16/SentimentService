@@ -184,6 +184,27 @@ namespace SentimentService.Tests
         }
 
         [TestMethod]
+        public void SS_CanCreatePunditPage()
+        {
+            var pundit = new Pundit
+            {
+                Name = "Dave Kludge"
+            };
+            var md = SentimentsHelper.PunditPageToMarkdown(
+                pundit,
+                _sut?.Season);
+            Console.WriteLine(md);
+            Assert.IsFalse(string.IsNullOrEmpty(md));
+        }
+
+        [TestMethod]
+        public void SS_CanUpdatePunditPages()
+        {
+            var result = _sut?.UpdatePunditPages();
+            Assert.IsTrue(result > 0);
+        }
+
+        [TestMethod]
         public void SS_KnowsBestPundits_2025()
         {
             var seasonOfInterest = "2025";
@@ -245,6 +266,7 @@ namespace SentimentService.Tests
                 updates++;
             }
             Console.WriteLine($"Total updates: {updates}");
+            _sut?.UpdatePunditPages();
         }
 
         private List<Posture> GetSentimentsForPlayer(
